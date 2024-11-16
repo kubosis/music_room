@@ -9,6 +9,43 @@ export default class CreateRoomPage extends(Component) {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            guestCanPause: true,
+            votesToSkip: this.defaultVotes,
+        };
+
+        this.handleCreateRoomButtonPressed = this.handleCreateRoomButtonPressed.bind(this);
+        this.handleGuestCanPauseChange = this.handleGuestCanPauseChange.bind(this);
+        this.handleVotesChange = this.handleVotesChange.bind(this);
+    }
+
+    handleVotesChange(e) {
+        this.setState({
+            votesToSkip: e.target.value
+        })
+    }
+
+    handleGuestCanPauseChange(e) {
+        this.setState({
+            guestCanPause: e.target.value,
+        })
+    }
+
+    handleCreateRoomButtonPressed() {
+        const requestOps = {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                votes_to_skip: this.state.votesToSkip,
+                guest_can_pause: this.state.guestCanPause
+            })
+        };
+        fetch("/api/create-room/", requestOps).then((response) =>
+            response.json()
+        ).then((data) =>
+            this.props.history.push('/room/' + data.code)
+        );
     }
 
     render() {
@@ -28,12 +65,8 @@ export default class CreateRoomPage extends(Component) {
         </Grid2>
         <Grid2 item xs={12}>
             <FormControl component="fieldset">
-                <FormHelperText>
-                    <div style={{ textAlign: 'center' }}>
-                        Guest Control of Playback State
-                    </div>
-                </FormHelperText>
-                <RadioGroup row defaultValue="true">
+                <FormHelperText style={{ textAlign: 'center' }}> Guest Control of Playback State </FormHelperText>
+                <RadioGroup row defaultValue="true" onChange={this.handleGuestCanPauseChange}>
                     <FormControlLabel value="true" control={<Radio color="primary"></Radio>} label="Play/Pause" labelPlacement="bottom">
                     </FormControlLabel>
 
@@ -46,20 +79,21 @@ export default class CreateRoomPage extends(Component) {
             <FormControl>
                 <TextField required={true}
                            type="number"
+                           onChange={this.handleVotesChange}
                            defaultValue={this.defaultVotes}
                            inputProps={{
                                min: 1,
                                style: {textAlign: "center"},
                            }}
                 />
-                <FormHelperText>
-                    <div align="center">Votes to skip song</div>
+                <FormHelperText style={{ textAlign: 'center' }}>
+                    Votes to skip song
                 </FormHelperText>
 
             </FormControl>
         </Grid2>
         <Grid2 item xs={12}>
-            <Button color="primary" variant="contained">
+            <Button color="primary" variant="contained" onClick={this.handleCreateRoomButtonPressed}>
                 Create A Music Room
             </Button>
         </Grid2>
