@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.views import APIView
@@ -77,4 +78,16 @@ class JoinRoom(APIView):
         self.request.session['room_code'] = code
         return Response({'message': 'Room Joined!'}, status=status.HTTP_200_OK)
 
+class UserInRoom(APIView):
+    serializer_class = RoomSerializer
+
+    def get(self, request, format_=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        data = {
+            'code': self.request.session.get('room_code'),
+        }
+
+        return JsonResponse(data, status=status.HTTP_200_OK)
 
