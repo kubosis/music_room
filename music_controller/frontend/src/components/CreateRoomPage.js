@@ -53,7 +53,7 @@ export default class CreateRoomPage extends(Component) {
     <Grid2
         container
         direction="column"
-        spacing={2}
+        spacing={1}
         alignItems="center" // Horizontal centering
         justifyContent="center" // Vertical centering
         style={{ minHeight: "100vh", minWidth: "100vw" }} // Full height container
